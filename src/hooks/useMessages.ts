@@ -1,4 +1,14 @@
 import { useState } from "react";
+import { gql } from "@apollo/client";
+
+gql`
+  query AllMessages {
+    messages {
+      id
+    }
+  }
+`;
+
 
 interface NewMessage {
   authorId: string
