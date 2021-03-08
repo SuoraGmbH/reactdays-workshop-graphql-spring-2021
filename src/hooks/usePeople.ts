@@ -1,3 +1,24 @@
+import { gql } from "@apollo/client";
+import { useAllPeopleQuery } from "../generated/graphql";
+
+gql`
+  query AllPeople {
+    people {
+      id
+      firstName
+      lastName
+      messagesConnection {
+        edges {
+          node {
+            id
+            text
+          }
+        }
+      }
+    }
+  }
+`;
+
 interface Message {
   id: string;
   text: string;
@@ -17,32 +38,17 @@ interface PeopleData {
 }
 
 const usePeople = (): PeopleData => {
+  const { data, error, loading } = useAllPeopleQuery({ pollInterval: 2000 });
+
   return {
-    loading: false,
-    people: [
-      {
-        id: "person-1",
-        firstName: "Jan",
-        lastName: "Krausenbaum",
-        messages: [
-          {
-            id: "message-1",
-            text: "Hello there, this is a test message.",
-          },
-        ],
-      },
-      {
-        id: "person-2",
-        firstName: "Florian",
-        lastName: "Sowade",
-        messages: [
-          {
-            id: "message-2",
-            text: "Hey, this is a second test message.",
-          },
-        ],
-      },
-    ],
+    loading,
+    error,
+    people: data?.people.map((person) => ({
+      id: person.id,
+      firstName: person.firstName,
+      lastName: person.lastName,
+      messages: person.messagesConnection?.edges.map(edge => edge.node) || [],
+    })) || [],
   };
 };
 

@@ -1,67 +1,55 @@
-import { useState } from "react";
 import { gql } from "@apollo/client";
+import {
+  AllMessagesQuery,
+  MutationSendMessageArgs,
+  useAllMessagesQuery,
+  useSendMessageMutation,
+} from "../generated/graphql";
 
 gql`
   query AllMessages {
     messages {
       id
+      text
+      author {
+        id
+        firstName
+        lastName
+      }
     }
   }
 `;
 
+gql`
+  mutation SendMessage($text: String!, $authorId: ID!) {
+    sendMessage(text: $text, authorId: $authorId) {
+      id
+    }
+  }
+`;
 
-interface NewMessage {
-  authorId: string
-  text: string
-}
-
-interface Person {
-  firstName: string;
-  lastName: string;
-}
-
-export interface Message {
-  id: string;
-  text: string;
-  author: Person;
-}
+export type Message = AllMessagesQuery["messages"][number]
 
 const useMessages = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "message-1",
-      text: "Hello there, this is a test message.",
-      author: {
-        firstName: "Jan",
-        lastName: "Krausenbaum",
-      },
+  const { data, error, refetch } = useAllMessagesQuery();
+  const [sendMessageToGraphQl] = useSendMessageMutation({
+    onCompleted: () => {
+      refetch();
     },
-    {
-      id: "message-2",
-      text: "Hey, this is a second test message.",
-      author: {
-        firstName: "Florian",
-        lastName: "Sowade",
-      },
-    },
-  ]);
+  });
 
-  const sendMessage = (message: NewMessage): void => {
-    setMessages(previousMessages => ([
-      ...previousMessages,
-      {
-        id: Date.now().toString(),
-        text: message.text,
-        author: {
-          firstName: "Jan",
-          lastName: "Krausenbaum",
-        },
-      },
-    ]));
+  if (error) {
+    throw error;
+  }
+
+  const sendMessage = (message: MutationSendMessageArgs): void => {
+    sendMessageToGraphQl({
+      variables: message,
+    });
   };
 
   return {
-    messages,
+    messages: data?.messages ?? [],
     sendMessage,
   };
 };
