@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MessageList from "./components/MessageList";
 import MessageCompose from "./components/MessageCompose";
 import PeopleList from "./components/PeopleList";
@@ -6,8 +6,10 @@ import useMessages from "./hooks/useMessages";
 import usePeople from "./hooks/usePeople";
 
 function App() {
+  const [firstName, setFirstName] = useState('');
+
   const { messages, sendMessage } = useMessages();
-  const { people, loading: peopleLoading, error: peopleError } = usePeople();
+  const { people, loading: peopleLoading, error: peopleError } = usePeople(firstName);
 
   const handleMessageSend = (text: string) => {
     sendMessage({
@@ -16,6 +18,10 @@ function App() {
     });
   };
 
+  const handleFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstName(event.target.value)
+  }
+
   return (
     <>
       <h1>List of Messages</h1>
@@ -23,6 +29,7 @@ function App() {
       <h1>Add New Message</h1>
       <MessageCompose onMessageSend={handleMessageSend} />
       <h1>People</h1>
+      First Name: <input onChange={handleFirstNameChange} value={firstName} />
       <PeopleList people={people} loading={peopleLoading} error={peopleError} />
     </>
   );

@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 import { useAllPeopleQuery } from "../generated/graphql";
 
 gql`
-  query AllPeople {
-    people {
+  query AllPeople($firstName: String) {
+    searchPeople(firstName: $firstName) {
       id
       firstName
       lastName
@@ -37,13 +37,13 @@ interface PeopleData {
   people: readonly Person[];
 }
 
-const usePeople = (): PeopleData => {
-  const { data, error, loading } = useAllPeopleQuery({ pollInterval: 2000 });
+const usePeople = (firstName?: string): PeopleData => {
+  const { data, error, loading } = useAllPeopleQuery({ variables: { firstName }, pollInterval: 2000 });
 
   return {
     loading,
     error,
-    people: data?.people.map((person) => ({
+    people: data?.searchPeople.map((person) => ({
       id: person.id,
       firstName: person.firstName,
       lastName: person.lastName,

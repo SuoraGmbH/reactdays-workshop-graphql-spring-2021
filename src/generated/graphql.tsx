@@ -49,7 +49,20 @@ export type PersonMessagesEdge = {
 export type Query = {
   __typename?: 'Query';
   messages: Array<Message>;
+  person?: Maybe<Person>;
   people: Array<Person>;
+  searchPeople: Array<Person>;
+};
+
+
+export type QueryPersonArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerySearchPeopleArgs = {
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
@@ -98,12 +111,14 @@ export type SendMessageMutation = (
   ) }
 );
 
-export type AllPeopleQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllPeopleQueryVariables = Exact<{
+  firstName?: Maybe<Scalars['String']>;
+}>;
 
 
 export type AllPeopleQuery = (
   { __typename?: 'Query' }
-  & { people: Array<(
+  & { searchPeople: Array<(
     { __typename?: 'Person' }
     & Pick<Person, 'id' | 'firstName' | 'lastName'>
     & { messagesConnection?: Maybe<(
@@ -195,8 +210,8 @@ export type SendMessageMutationHookResult = ReturnType<typeof useSendMessageMuta
 export type SendMessageMutationResult = Apollo.MutationResult<SendMessageMutation>;
 export type SendMessageMutationOptions = Apollo.BaseMutationOptions<SendMessageMutation, SendMessageMutationVariables>;
 export const AllPeopleDocument = gql`
-    query AllPeople {
-  people {
+    query AllPeople($firstName: String) {
+  searchPeople(firstName: $firstName) {
     id
     firstName
     lastName
@@ -224,6 +239,7 @@ export const AllPeopleDocument = gql`
  * @example
  * const { data, loading, error } = useAllPeopleQuery({
  *   variables: {
+ *      firstName: // value for 'firstName'
  *   },
  * });
  */
