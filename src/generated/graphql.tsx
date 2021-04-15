@@ -82,6 +82,19 @@ export enum CacheControlScope {
 }
 
 
+export type AuthorDetailsQueryVariables = Exact<{
+  personId: Scalars['ID'];
+}>;
+
+
+export type AuthorDetailsQuery = (
+  { __typename?: 'Query' }
+  & { person?: Maybe<(
+    { __typename?: 'Person' }
+    & Pick<Person, 'id' | 'email' | 'firstName' | 'lastName'>
+  )> }
+);
+
 export type AllMessagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -135,6 +148,44 @@ export type AllPeopleQuery = (
 );
 
 
+export const AuthorDetailsDocument = gql`
+    query AuthorDetails($personId: ID!) {
+  person(id: $personId) {
+    id
+    email
+    firstName
+    lastName
+  }
+}
+    `;
+
+/**
+ * __useAuthorDetailsQuery__
+ *
+ * To run a query within a React component, call `useAuthorDetailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAuthorDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAuthorDetailsQuery({
+ *   variables: {
+ *      personId: // value for 'personId'
+ *   },
+ * });
+ */
+export function useAuthorDetailsQuery(baseOptions: Apollo.QueryHookOptions<AuthorDetailsQuery, AuthorDetailsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AuthorDetailsQuery, AuthorDetailsQueryVariables>(AuthorDetailsDocument, options);
+      }
+export function useAuthorDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AuthorDetailsQuery, AuthorDetailsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AuthorDetailsQuery, AuthorDetailsQueryVariables>(AuthorDetailsDocument, options);
+        }
+export type AuthorDetailsQueryHookResult = ReturnType<typeof useAuthorDetailsQuery>;
+export type AuthorDetailsLazyQueryHookResult = ReturnType<typeof useAuthorDetailsLazyQuery>;
+export type AuthorDetailsQueryResult = Apollo.QueryResult<AuthorDetailsQuery, AuthorDetailsQueryVariables>;
 export const AllMessagesDocument = gql`
     query AllMessages {
   messages {

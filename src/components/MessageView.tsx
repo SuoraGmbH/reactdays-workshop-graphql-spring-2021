@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/macro";
 import { Message } from "../hooks/useMessages";
+import { AuthorDetails } from "./AuthorDetails";
 
 const MessageItem = styled.article`
   font-family: "Helvetica", sans-serif;
@@ -19,10 +20,24 @@ interface Props {
 const MessageView: React.FunctionComponent<Props> = ({
   message: { text, author },
 }) => {
+  const [showAuthorDetails, setShowAuthorDetails] = useState(false);
+
   return (
     <MessageItem role="listitem article">
       {text}
-      <footer>{author.firstName} {author.lastName}</footer>
+      <footer
+        onClick={() => {
+          setShowAuthorDetails(!showAuthorDetails);
+        }}
+      >
+        {author.firstName} {author.lastName}
+      </footer>
+      {showAuthorDetails && (
+        <AuthorDetails
+          personId={author.id}
+          onRequestClose={() => setShowAuthorDetails(false)}
+        />
+      )}
     </MessageItem>
   );
 };
