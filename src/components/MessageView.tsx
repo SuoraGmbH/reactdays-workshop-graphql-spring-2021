@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/macro";
 import { Message } from "../hooks/useMessages";
-import { AuthorDetails } from "./AuthorDetails";
+import { AuthorDetailsModal } from "./AuthorDetailsModal";
 
 const MessageItem = styled.article`
   font-family: "Helvetica", sans-serif;
@@ -33,7 +33,7 @@ const MessageView: React.FunctionComponent<Props> = ({
         {author.firstName} {author.lastName}
       </footer>
       {showAuthorDetails && (
-        <AuthorDetails
+        <AuthorDetailsModal
           personId={author.id}
           onRequestClose={() => setShowAuthorDetails(false)}
         />

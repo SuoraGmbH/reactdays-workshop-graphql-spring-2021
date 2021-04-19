@@ -1,11 +1,9 @@
+import {gql} from "@apollo/client";
+import {useAuthorDetailsQuery} from "../generated/graphql";
 import React from "react";
-import { gql } from "@apollo/client";
-import { useAuthorDetailsQuery } from "../generated/graphql";
-import styled from "styled-components/macro";
 
 interface Props {
   personId: string;
-  onRequestClose: () => void;
 }
 
 gql`
@@ -19,29 +17,8 @@ gql`
   }
 `;
 
-const Modal = styled.div`
-  position: fixed;
-  background-color: rgba(55, 55, 55, 0.35);
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 999;
-  & > div {
-    width: 400px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 2em;
-    background: white;
-  }
-`;
 
-export const AuthorDetails: React.FunctionComponent<Props> = ({
-  personId,
-  onRequestClose,
-}) => {
+export const AuthorDetails: React.FunctionComponent<Props> = ({personId}) => {
   const queryResult = useAuthorDetailsQuery({
     variables: { personId },
     returnPartialData: true,
@@ -56,11 +33,10 @@ export const AuthorDetails: React.FunctionComponent<Props> = ({
   const { person } = data;
 
   return (
-    <Modal onClick={() => onRequestClose()}>
-      <div onClick={(e) => e.stopPropagation()}>
+      <div>
         <p>Name: {person?.firstName}</p>
         <p>Mail: {person?.email || "Loading…"}</p>
       </div>
-    </Modal>
   );
-};
+
+}
